@@ -9,3 +9,4 @@ $routes->get('/', 'Home::index');
 $routes->get('/about', 'About::index');
 $routes->get('/dashboard', 'Dashboard::index');
 $routes->get('/contact', 'Contact::index');
+$routes->match(['get','post'], 'menu', 'Menu::index');
