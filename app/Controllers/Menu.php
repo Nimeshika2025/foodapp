@@ -44,4 +44,76 @@ class Menu extends BaseController
 
         return view('menu', $data);
     }
+
+   // FOOD LIST
+    public function foods()
+    {
+        $model = new FoodModel();
+
+        $data['foods'] = $model->findAll();
+
+        return view('foods', $data);
+    }
+
+    // EDIT PAGE
+    public function edit($id)
+    {
+        $model = new FoodModel();
+
+        $data['food'] = $model->find($id);
+
+        return view('edit_food', $data);
+    }
+
+  public function update($id)
+{
+    $model = new FoodModel();
+
+    // Validation rules
+    $rules = [
+        'title' => 'required',
+        'description' => 'required',
+        'price' => 'required|numeric'
+    ];
+
+    // Check validation
+    if (!$this->validate($rules)) {
+
+        $data['validation'] = $this->validator;
+        $data['food'] = $model->find($id);
+
+        return view('edit_food', $data);
+    }
+
+    $data = [
+        'title' => $this->request->getPost('title'),
+        'description' => $this->request->getPost('description'),
+        'price' => $this->request->getPost('price'),
+    ];
+
+    // Handle image upload
+    $imageFile = $this->request->getFile('image');
+
+    if ($imageFile && $imageFile->isValid() && !$imageFile->hasMoved()) {
+
+        $newName = $imageFile->getRandomName();
+
+        $imageFile->move(ROOTPATH . 'public/images', $newName);
+
+        $data['image'] = $newName;
+    }
+
+    $model->update($id, $data);
+
+    return redirect()->to(base_url('public/foods'));
+}
+    // DELETE
+    public function delete($id)
+    {
+        $model = new FoodModel();
+
+        $model->delete($id);
+
+        return redirect()->to(base_url('public/foods'));
+    }
 }
